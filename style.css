@@ -1,0 +1,31 @@
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#info {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+  color: white;
+}
+
+.link-HTML {
+  position: absolute;
+  font-size: 2.8rem;
+  bottom: 100px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+  color: white;
+  opacity: 0;
+}
+.link-HTML-active {
+  opacity: 1 !important;
+  transition: opacity 0.5s ease-in;
+}
