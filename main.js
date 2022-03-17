@@ -7,7 +7,8 @@ import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { FrontSide } from "three";
 
-let HTMLLink = document.querySelector("#link-HTML");
+let HTMLLink = document.querySelector(".link-HTML");
+let isZooming = false;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xcccccc);
@@ -117,7 +118,7 @@ concreteRoughness.wrapS = THREE.RepeatWrapping;
 concreteRoughness.wrapT = THREE.RepeatWrapping;
 concreteRoughness.repeat.set(4, 4);
 const roofMaterial = new THREE.MeshStandardMaterial({
-  map: concreteAo,
+  map: concreteRoughness,
   normalMap: concreteNormal,
   displacementMap: concreteHeight,
   displacementScale: 1,
@@ -130,7 +131,7 @@ const roof = new THREE.Mesh(
 );
 
 const allWallMaterial = new THREE.MeshStandardMaterial({
-  map: concreteAlbedo,
+  bumpmap: concreteAlbedo,
   normalMap: concreteNormal,
   displacementMap: concreteHeight,
   displacementScale: 1.8,
@@ -169,12 +170,12 @@ const textureProject2 = new THREE.TextureLoader().load("assets/nativeJS.png");
 textureProject2.magFilter = THREE.NearestFilter;
 const viteProject = new THREE.TextureLoader().load("assets/vite.jpeg");
 
-const informationBoardTexture1 = new THREE.TextureLoader().load(
+const informationBoardTexture2 = new THREE.TextureLoader().load(
   "assets/tek_HTML_CSS.png"
 );
 
-const informationBoardTexture2 = new THREE.TextureLoader().load(
-  "assets/tek_Native_JavaScript.png"
+const informationBoardTexture1 = new THREE.TextureLoader().load(
+  "assets/tek_JavaScript.png"
 );
 const informationBoardMaterial1 = new THREE.MeshBasicMaterial({
   map: informationBoardTexture1,
@@ -197,16 +198,16 @@ const informationBoard2 = new THREE.Mesh(
 informationBoard1.lookAt(camera.position);
 informationBoard1.position.y = 10;
 informationBoard1.position.x = 50;
-informationBoard1.position.z = -39;
-informationBoard1.userData.name = "Info";
+informationBoard1.position.z = -60;
+informationBoard1.userData.name = "JavaScript";
 informationBoard1.castShadow = true;
 informationBoard1.scale.set(1, 1, 1);
 informationBoard2.lookAt(camera.position);
 informationBoard2.position.y = 10;
 informationBoard2.castShadow = true;
-informationBoard2.userData.name = "Info";
+informationBoard2.userData.name = "HTML";
 informationBoard2.position.x = -20;
-informationBoard2.position.z = -39;
+informationBoard2.position.z = -60;
 scene.add(informationBoard1, informationBoard2);
 
 const pillarSize = new THREE.CylinderGeometry(0.2, 0.2, 10, 10);
@@ -214,13 +215,15 @@ const pillarMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
 const pillar1 = new THREE.Mesh(pillarSize, pillarMaterial);
 const pillar2 = new THREE.Mesh(pillarSize, pillarMaterial);
 pillar1.position.y = 5;
+pillar1.userData.name = "JavaScript";
 pillar1.castShadow = true;
 pillar1.position.x = 50;
-pillar1.position.z = -40;
+pillar1.position.z = -61;
 pillar2.position.y = 5;
+pillar2.userData.name = "HTML";
 pillar2.castShadow = true;
 pillar2.position.x = -20;
-pillar2.position.z = -40;
+pillar2.position.z = -61;
 scene.add(pillar1, pillar2);
 
 //vilken form den har
@@ -260,34 +263,22 @@ const project1 = new THREE.Mesh(geometry, materialProject1);
 project1.position.x = -48;
 project1.position.z = -96;
 project1.position.y = 32;
-project1.userData.name = "Project";
+project1.userData.name = "ProjHTML";
 const project2 = new THREE.Mesh(geometry, materialProject2);
 project2.position.x = 48;
 project2.position.z = -96;
 project2.position.y = 32;
-project2.userData.name = "Project";
+project2.userData.name = "ProjJavaScript";
 
 const project3 = new THREE.Mesh(projectSideWall, materialProject3);
 project3.position.x = -96;
 project3.position.y = 32;
 project3.position.z = 0;
-project3.userData.name = "Project";
+project3.userData.name = "ProjVue";
 
 //hämtar det du vill ha till scenen
 scene.add(project1, project2, wallBack, wallLeft, wallRight, project3);
-const pointer = new THREE.OctahedronGeometry(1, 0);
-const pointerMaterial = new THREE.MeshPhysicalMaterial({
-  map: texture,
-});
-pointerMaterial.color.set(0x800000);
-const object = new THREE.Mesh(pointer, pointerMaterial);
 
-object.position.x = -17;
-object.position.y = 20;
-object.position.z = -27;
-object.userData.name = "JavaScript Pekare";
-object.userData.draggable = true;
-scene.add(object);
 //---------------FORMER -----------------------------------//
 
 //---------------LJUS -------------------------------------//
@@ -307,7 +298,7 @@ spotlight1.penumbra = 1;
 spotlight1.position.x = -9.86;
 spotlight1.position.y = -3.5;
 spotlight1.position.z = 18.81;
-spotlight1.castShadow = true;
+scene.add(spotlight1);
 
 const spotlight2 = new THREE.SpotLight(0xffffff);
 spotlight2.intensity = 0.4;
@@ -318,7 +309,6 @@ spotlight2.penumbra = 1;
 spotlight2.position.x = 19.91;
 spotlight2.position.y = -9.86;
 spotlight2.position.z = 49.69;
-spotlight2.castShadow = true;
 scene.add(spotlight2);
 
 const pointLight = new THREE.PointLight(0xffffff);
@@ -327,7 +317,7 @@ pointLight2.intensity = 0.6;
 pointLight2.distance = 40;
 pointLight2.decay = 0.2;
 pointLight2.position.x = 50;
-pointLight2.position.y = 34.25;
+pointLight2.position.y = 37.56;
 pointLight2.position.z = -35.22;
 pointLight2.castShadow = true;
 const pointLightHelper = new THREE.PointLightHelper(pointLight2);
@@ -336,10 +326,10 @@ pointLight.intensity = 0.6;
 pointLight.distance = 42.35;
 pointLight.decay = 0.2;
 pointLight.position.x = -18.68;
-pointLight.position.y = 37.56;
-pointLight.position.z = -44.05;
-// pointLight.castShadow = true;
-// scene.add(pointLight, pointLightHelper, pointLight2);
+pointLight.position.y = 39.56;
+pointLight.position.z = -35.22;
+pointLight.castShadow = true;
+scene.add(pointLight, pointLightHelper, pointLight2);
 // const lightgui = new GUI();
 
 // const pointLightFolder = lightgui.addFolder("THREE PointLight");
@@ -391,7 +381,6 @@ document.addEventListener("keydown", onKeyDown, false);
 
 //låter sig panorera över rummet
 document.addEventListener("mousemove", function (e) {
-  // console.log(e.movementX);
   if (e.buttons === 1) {
     controls.lock();
   }
@@ -415,32 +404,135 @@ cameraFolder.add(camera.position, "z", 0, 10);
 cameraFolder.open();
 
 const raycaster = new THREE.Raycaster();
-// raycaster.layers.set(1);
+
 const mouse = new THREE.Vector2();
-// let draggable = THREE.Object3D;
 
 window.addEventListener("click", onMouseClick);
+window.addEventListener("mousemove", onMouseHover);
+
+function onMouseHover(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  let intersects = raycaster.intersectObjects(scene.children);
+  intersects.forEach((object) => {
+    if (
+      object.object.userData.name === "HTML" ||
+      object.object.userData.name === "JavaScript"
+    ) {
+      object.object.material.aoMapIntensity = 0;
+    }
+  });
+}
 
 function onMouseClick(event) {
-  event.preventDefault();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
 
   let clickedObject = null;
   let intersects = raycaster.intersectObjects(scene.children);
-  console.log(scene.children);
   intersects.forEach((object) => {
-    if (object.object.userData.name === "Info") {
+    console.log(object.object.userData);
+    if (object.object.userData.name === "JavaScript") {
+      clickedObject = object;
+      HTMLLink.setAttribute(
+        "href",
+        "https://github.com/ErikaAlexandersson/Native-JavaScript"
+      );
+      updateCamera(clickedObject);
+    }
+    if (object.object.userData.name === "HTML") {
       clickedObject = object;
       updateCamera(clickedObject);
     }
-    console.log("Name", object.object.userData.name);
-    // console.log("Position", object.object.position);
+    if (object.object.userData.name === "ProjJavaScript") {
+      clickedObject = object;
+      // updateCamera(clickedObject);
+      goToProject(clickedObject);
+    }
   });
 }
 
+function goToProject(clickedObject) {
+  const cameraMove = new TWEEN.Tween(camera.position)
+    .to(
+      {
+        x: clickedObject.object.position.x,
+        y: clickedObject.object.position.y,
+        z: clickedObject.object.position.z + 30,
+      },
+      3000
+    )
+    // .easing(TWEEN.Easing.Cubic.In)
+    .onUpdate(() => {
+      camera.lookAt(
+        clickedObject.object.position.x,
+        clickedObject.object.position.y,
+        clickedObject.object.position.z
+      );
+    })
+    .onComplete(() => {
+      textContainer.style.display = "block";
+    })
+    .start();
+}
+
+let backText = document.querySelector(".back");
+let textContainer = document.querySelector(".text-container");
+textContainer.style.display = "none";
+backText.addEventListener("click", getBack);
+
+function getBack() {
+  isZooming = false;
+  textContainer.style.display = "none";
+
+  let cameraPosition = camera.position;
+  console.log(cameraPosition);
+  const cameraMove = new TWEEN.Tween(camera.position)
+    .to(
+      {
+        x: cameraPosition.x,
+        y: cameraPosition.y + 10,
+        z: cameraPosition.z + 35,
+      },
+      1000
+    )
+    .onUpdate(() => {
+      dimmUp();
+      // camera.lookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    })
+    .onComplete(() => {})
+    .start();
+}
+
+function dimmUp() {
+  const dimmer1 = new TWEEN.Tween(spotlight1)
+    .to({ intensity: 0.6 }, 1000)
+    .start();
+  console.log(spotlight1.intensity);
+  const dimmerPoint = new TWEEN.Tween(pointLight)
+    .to({ intensity: 0.8 }, 1000)
+    .start();
+  const dimAmbientLight = new TWEEN.Tween(ambientLight)
+    .to({ intensity: 1.5 }, 1000)
+    .start();
+}
+
+function dimmLight() {
+  const dimmer1 = new TWEEN.Tween(spotlight1)
+    .to({ intensity: 0 }, 1000)
+    .start();
+  const dimmerPoint = new TWEEN.Tween(pointLight)
+    .to({ intensity: 0 }, 1000)
+    .start();
+  const dimAmbientLight = new TWEEN.Tween(ambientLight)
+    .to({ intensity: 0.8 }, 1000)
+    .start();
+}
+
 function updateCamera(clickedObject) {
+  isZooming = true;
   const cameraMove = new TWEEN.Tween(camera.position)
     .to(
       {
@@ -459,26 +551,37 @@ function updateCamera(clickedObject) {
       );
     })
     .onComplete(() => {
-      scaleInformation();
+      scaleInformation(clickedObject);
+      dimmLight();
     })
     .start();
 }
 
-function scaleInformation() {
-  console.log("Hello");
-  var tween = new TWEEN.Tween(informationBoard2.scale)
-    .to({ x: 2.3, y: 1.2, z: 0 }, 1000)
-    .yoyo(true)
-    .onUpdate(() => {
-      HTMLLink.className = "link-HTML-active";
-      HTMLLink.getElementsByClassName.opacity = 1;
-    })
-    .start();
+function scaleInformation(clickedObject) {
+  if ((isZooming = true)) {
+    let tween = new TWEEN.Tween(clickedObject.object.scale)
+      .to({ x: 2.3, y: 1.2, z: 0 }, 1000)
+      .yoyo(true)
+      .onComplete(() => {
+        textContainer.style.display = "block";
+        HTMLLink.className = "link-HTML-active";
+      })
+      .start();
+  }
+  if ((isZooming = false)) {
+    let tween = new TWEEN.Tween(clickedObject.object.scale)
+      .to({ x: 1, y: 1, z: 0 }, 1000)
+      .yoyo(true)
+      .onComplete(() => {
+        textContainer.style.display = "block";
+        HTMLLink.className = "link-HTML-active";
+      })
+      .start();
+  }
 }
 function animate() {
   requestAnimationFrame(animate);
   render();
-  object.rotateY(0.03);
   stats.update();
   TWEEN.update();
 }
