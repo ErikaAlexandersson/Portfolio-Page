@@ -2,13 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio</title>
+    <title>Document</title>
+    <script
+      src="https://kit.fontawesome.com/ed11b24466.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="/main.js"></script>
   </head>
   <body>
-    <div id="app">
-      <h1 id="info">Erikas sida</h1>
+    <div id="blocker">
+      <div id="instructions">
+        <h1 id="header">Erikas galleri</h1>
+        <p>Klicka här för att starta</p>
+      </div>
+      <div id="container">
+        <div id="controls-during">
+          <div id="w">
+            <img src="/assets/arrows/arrow-up-solid.png" />
+            <p>W</p>
+          </div>
+          <div id="a">
+            <img src="/assets/arrows/arrow-left-solid.png" />
+            <p>A</p>
+          </div>
+          <div id="s">
+            <p>S</p>
+            <img src="/assets/arrows/arrow-down-solid.png" />
+          </div>
+          <div id="d">
+            <p>D</p>
+            <img src="/assets/arrows/arrow-right-solid.png" />
+          </div>
+        </div>
+        <div id="space">
+          <p>Tryck mellanslag för att avslutahelskärm</p>
+        </div>
+      </div>
       <div class="text-container">
         <a
           class="link-HTML"
@@ -18,10 +50,6 @@
         >
         <p class="back">Tillbaka</p>
       </div>
-
-      <canvas id="bg"> </canvas>
     </div>
-
-    <script type="module" src="/main.js"></script>
   </body>
 </html>

@@ -1,7 +1,109 @@
+* {
+  margin: 0;
+}
 canvas {
   position: fixed;
   top: 0;
   left: 0;
+}
+#blocker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+#instructions {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(241, 231, 231, 0.486);
+  width: 50%;
+  height: 50%;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+img {
+  width: 20px;
+  height: 30px;
+}
+#controls {
+  display: grid;
+  grid-template-columns: 40% 20% 40%;
+  grid-template-rows: 1fr 1fr;
+  font-size: 24px;
+  width: 170px;
+  height: 140px;
+}
+#w {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: flex-end;
+  justify-self: center;
+  text-shadow: 1px 1px rgb(139, 135, 135);
+  color: rgb(88, 85, 85);
+}
+#a {
+  display: flex;
+  justify-content: center;
+  justify-content: space-around;
+  align-items: flex-start;
+  grid-column: 1;
+  grid-row: 2;
+  text-shadow: 1px 1px rgb(139, 135, 135);
+  color: rgb(88, 85, 85);
+}
+#s {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  grid-column: 2;
+  grid-row: 2;
+  text-shadow: 1px 1px rgb(139, 135, 135);
+  color: rgb(88, 85, 85);
+}
+#d {
+  display: flex;
+  justify-content: center;
+  justify-content: space-around;
+  align-items: flex-start;
+  grid-column: 3;
+  grid-row: 2;
+  text-shadow: 1px 1px rgb(139, 135, 135);
+  color: rgb(88, 85, 85);
+}
+#controls-during {
+  display: grid;
+  grid-template-columns: 40% 20% 40%;
+  grid-template-rows: 1fr 1fr;
+  font-size: 24px;
+  width: 170px;
+  height: 140px;
+  position: absolute;
+  left: 40px;
+  bottom: 30px;
+  z-index: 100;
+}
+#container {
+  display: flex;
+}
+#space {
+  font-size: 1rem;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
+.active {
+  color: rgb(22, 26, 24);
+  font-size: larger;
 }
 
 #info {
