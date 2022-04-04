@@ -4,6 +4,7 @@ import { PointerLockControls } from "three/examples/jsm/controls/PointerLockCont
 import { FrontSide } from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import { GUI } from "dat.gui";
+import { SpotLightHelper } from "three";
 
 let camera, scene, renderer, controls;
 
@@ -15,13 +16,10 @@ let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
-let canJump = false;
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
-// const vertex = new THREE.Vector3();
-// const color = new THREE.Color();
 
 init();
 animate();
@@ -145,6 +143,8 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
   // floor
   const floorTexture = new THREE.TextureLoader();
@@ -194,35 +194,6 @@ function init() {
   let floorGeometry = new THREE.PlaneGeometry(300, 300, 100, 100);
   floorGeometry.rotateX(-Math.PI / 2);
 
-  // vertex displacement
-
-  // let position = floorGeometry.attributes.position;
-
-  // for (let i = 0, l = position.count; i < l; i++) {
-  //   vertex.fromBufferAttribute(position, i);
-
-  //   vertex.x += Math.random() * 20 - 10;
-  //   vertex.y += Math.random() * 2;
-  //   vertex.z += Math.random() * 20 - 10;
-
-  //   position.setXYZ(i, vertex.x, vertex.y, vertex.z);
-  // }
-
-  // floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
-
-  // position = floorGeometry.attributes.position;
-  // const colorsFloor = [];
-
-  // for (let i = 0, l = position.count; i < l; i++) {
-  //   color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
-  //   colorsFloor.push(color.r, color.g, color.b);
-  // }
-
-  // floorGeometry.setAttribute(
-  //   "color",
-  //   new THREE.Float32BufferAttribute(colorsFloor, 3)
-  // );
-
   const floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.receiveShadow = true;
   scene.add(floor);
@@ -263,7 +234,6 @@ function init() {
     roofWoodMaterial
   );
   roof.receiveShadow = true;
-  // floor.geometry.uv2 = floor.geometry.attributes.uv;
   roof.position.y = 90;
   roof.rotation.x -= Math.PI / 2;
 
@@ -272,37 +242,60 @@ function init() {
   // objects
 
   const pillarSize = new THREE.CylinderGeometry(0.2, 0.2, 10, 10);
+  const wire = new THREE.CylinderGeometry(0.1, 0.1, 60, 10);
+  const wireMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
+  let wireLoop = "";
+  let wires = [];
+
+  for (let i = 1; i <= 9; i++) {
+    wireLoop = new THREE.Mesh(wire, wireMaterial);
+    wires.push(wireLoop);
+    scene.add(wireLoop);
+    wireLoop.position.x = 20 + i;
+  }
+  console.log(wires);
+  wires[0].position.set(-65, 60, -85);
+  wires[0].castShadow = true;
+  wires[1].position.set(35, 60, -85);
+  wires[1].castShadow = true;
+  wires[2].position.set(65, 60, -85);
+  wires[2].castShadow = true;
+  wires[3].position.set(-85, 60, -35);
+  wires[3].castShadow = true;
+  wires[4].position.set(-85, 60, -5);
+  wires[4].castShadow = true;
+  wires[5].position.set(90, 60, -5);
+  wires[5].castShadow = true;
+  wires[6].position.set(90, 60, -35);
+  wires[6].castShadow = true;
+  wires[7].position.set(-20, 60, 60);
+  wires[7].castShadow = true;
+  wires[8].position.set(20, 60, 60);
+  wires[8].castShadow = true;
+
+  const wire1 = new THREE.Mesh(wire, wireMaterial);
+  wire1.position.set(-35, 60, -85);
   const pillarMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
   const pillar1 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar2 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar3 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar4 = new THREE.Mesh(pillarSize, pillarMaterial);
-  pillar1.position.y = 5;
   pillar1.userData.name = "JavaScript";
   pillar1.castShadow = true;
-  pillar1.position.x = 50;
-  pillar1.position.z = -61;
-  pillar2.position.y = 5;
+  pillar1.position.set(50, 5, -61);
   pillar2.userData.name = "HTML";
+  pillar2.position.set(-37, 5, -61);
   pillar2.castShadow = true;
-  pillar2.position.x = -37;
-  pillar2.position.z = -61;
-  pillar3.position.z = -20;
-  pillar3.position.y = 5;
-  pillar3.position.x = -56;
-  pillar4.position.z = -20;
-  pillar4.position.y = 5;
-  pillar4.position.x = 56;
-  scene.add(pillar1, pillar2, pillar3, pillar4);
+  pillar3.position.set(-62, 5, -20);
+  pillar4.position.set(56, 5, -20);
+
+  scene.add(pillar1, pillar2, pillar3, pillar4, wire1);
 
   const wallTexture = new THREE.TextureLoader().load(
     "assets/concrete3-albedo.png"
   );
   wallTexture.magFilter = THREE.NearestFilter;
   wallTexture.roughness = 1;
-  const wallTexture2 = new THREE.TextureLoader().load(
-    "assets/concrete3.normal.png"
-  );
 
   const texture = new THREE.TextureLoader().load("assets/home.png");
   texture.magFilter = THREE.NearestFilter;
@@ -310,6 +303,7 @@ function init() {
   textureProject2.magFilter = THREE.NearestFilter;
   const viteProject = new THREE.TextureLoader().load("assets/vite.jpeg");
   const crumbleProject = new THREE.TextureLoader().load("assets/crumble.png");
+  const about = new THREE.TextureLoader().load("assets/omMig.png");
 
   const informationBoardTexture2 = new THREE.TextureLoader().load(
     "assets/tek_HTML_CSS.png"
@@ -358,27 +352,28 @@ function init() {
     informationBoardSize,
     informationBoardMaterial4
   );
-  informationBoard1.lookAt(camera.position);
+
+  const lookAt = new THREE.Vector3(0, 12, 10);
+  informationBoard1.lookAt(lookAt);
   informationBoard1.position.y = 10;
   informationBoard1.position.x = 50;
   informationBoard1.position.z = -60;
   informationBoard1.userData.name = "JavaScript";
-  informationBoard1.castShadow = true;
   informationBoard1.scale.set(1, 1, 1);
-  informationBoard2.lookAt(camera.position);
+  const lookAt2 = new THREE.Vector3(0, 12, 10);
+  informationBoard2.lookAt(lookAt2);
   informationBoard2.position.y = 10;
-  informationBoard2.castShadow = true;
   informationBoard2.userData.name = "HTML";
   informationBoard2.position.x = -37;
   informationBoard2.position.z = -60;
   informationBoard3.position.y = 10;
-  informationBoard3.position.x = -53;
+  informationBoard3.position.x = -60;
   informationBoard3.position.z = -20;
   informationBoard3.userData.name = "Vue3";
   informationBoard3.lookAt(pillar3.position);
   informationBoard4.position.x = 53;
   informationBoard4.position.z = -20;
-  informationBoard4.position.y = 9;
+  informationBoard4.position.y = 10;
   informationBoard4.userData.name = "Crumble";
   scene.add(
     informationBoard1,
@@ -432,71 +427,172 @@ function init() {
     aoMap: concreteAlbedo,
   });
 
-  const listSize = new THREE.BoxGeometry(1.2, 5, 200, 400);
-  const list = new THREE.Mesh(listSize, wallmaterial);
-  list.castShadow = true;
-  list.receiveShadow = true;
-  list.position.x = -94;
-  const listSize2 = new THREE.BoxGeometry(200, 5, 1.2, 400);
-  const list2 = new THREE.Mesh(listSize2, wallmaterial);
-  list2.position.z = -97;
-
   const wallBack = new THREE.Mesh(wallsize, roofMaterial);
   wallBack.receiveShadow = true;
-  wallBack.castShadow = true;
+  const wallFront = new THREE.Mesh(wallsize, roofMaterial);
   const wallLeft = new THREE.Mesh(sideWallSize, roofMaterial);
   const wallRight = new THREE.Mesh(sideWallSize, roofMaterial);
   roofMaterial.color.set(0xf7f2eb);
   roofMaterial.opacity = 0.3;
-  wallLeft.position.y = 34;
-  wallLeft.position.x = -95;
-  wallBack.position.y = 34;
-  wallRight.position.y = 34;
-  wallRight.castShadow = true;
+  wallLeft.position.set(-95, 34, 0);
+  wallLeft.receiveShadow = true;
+  wallBack.position.set(0, 34, -96);
+  wallBack.receiveShadow = true;
+  wallRight.position.set(100, 34, 0);
   wallRight.receiveShadow = true;
-  wallRight.position.x = 100;
-  wallBack.position.z = -96;
-  wallLeft.castShadow = true;
+  wallFront.position.set(0, 34, 70);
+  wallFront.receiveShadow = true;
 
   scene.background = new THREE.Color(0x000011);
 
-  const materialProject1 = new THREE.MeshBasicMaterial({
-    map: texture,
-    side: FrontSide,
-  });
-  const materialProject2 = new THREE.MeshBasicMaterial({
-    map: textureProject2,
-  });
-  const materialProject3 = new THREE.MeshBasicMaterial({
-    map: viteProject,
-  });
-  const materialProject4 = new THREE.MeshBasicMaterial({
-    map: crumbleProject,
-  });
+  const projectMaterials = [
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right,
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshBasicMaterial({
+      map: texture, // front
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //back
+    }),
+  ];
 
-  const project1 = new THREE.Mesh(geometry, materialProject1);
+  const project1 = new THREE.Mesh(geometry, [
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right,
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshBasicMaterial({
+      map: texture, // front
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //back
+    }),
+  ]);
   project1.position.x = -48;
-  project1.position.z = -80;
+  project1.position.z = -85;
   project1.position.y = 32;
+  project1.castShadow = true;
   project1.userData.name = "ProjHTML";
-  // project1.material.color = "0xb9bf9f";
-  const project2 = new THREE.Mesh(geometry, materialProject2);
+
+  const project2 = new THREE.Mesh(geometry, [
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right,
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshBasicMaterial({
+      map: textureProject2, // front
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //back
+    }),
+  ]);
   project2.position.x = 48;
-  project2.position.z = -80;
+  project2.position.z = -85;
   project2.position.y = 32;
+  project2.castShadow = true;
   project2.userData.name = "ProjJavaScript";
 
-  const project3 = new THREE.Mesh(projectSideWall, materialProject3);
-  project3.position.x = -94;
+  const project3 = new THREE.Mesh(projectSideWall, [
+    new THREE.MeshBasicMaterial({
+      map: viteProject, //right,
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff",
+      // front
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //back
+    }),
+  ]);
+  project3.position.x = -85;
   project3.position.y = 32;
   project3.position.z = -20;
+  project3.castShadow = true;
   project3.userData.name = "ProjVue";
 
-  const project4 = new THREE.Mesh(projectSideWall, materialProject4);
-  project4.position.x = 97.4;
+  const project4 = new THREE.Mesh(projectSideWall, [
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right,
+    }),
+    new THREE.MeshBasicMaterial({
+      map: crumbleProject, //right
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // front
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //back
+    }),
+  ]);
+  project4.position.x = 90;
   project4.position.y = 32;
   project4.position.z = -20;
+  project4.castShadow = true;
   project4.userData.name = "ProjCrumble";
+
+  const project5 = new THREE.Mesh(geometry, [
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", //right,
+    }),
+    new THREE.MeshBasicMaterial({
+      color: "0xffffff", //back
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // top
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // bottom
+    }),
+    new THREE.MeshPhysicalMaterial({
+      color: "0xffffff", // front
+    }),
+    new THREE.MeshBasicMaterial({
+      map: about, //right
+    }),
+  ]);
+  project5.position.set(0, 32, 60);
+  project5.castShadow = true;
 
   informationBoard4.lookAt(pillar4.position);
 
@@ -507,19 +603,19 @@ function init() {
     wallBack,
     wallLeft,
     wallRight,
+    wallFront,
     project3,
     project4,
-    list,
-    list2
+    project5
   );
 
   const ambientLight = new THREE.AmbientLight(0xf5f1e7);
-  ambientLight.intensity = 0.09;
+  ambientLight.intensity = 0.1;
 
   scene.add(ambientLight);
 
   const spotlight1 = new THREE.SpotLight(0xffffff);
-  spotlight1.intensity = 0.2;
+  spotlight1.intensity = 0.7;
   spotlight1.distance = 0;
   spotlight1.decay = 2.4;
   spotlight1.angle = 0.4;
@@ -528,61 +624,80 @@ function init() {
   spotlight1.position.y = -3.5;
   spotlight1.position.z = 18.81;
   spotlight1.castShadow = true;
+  spotlight1.shadow.mapSize.width = 512; // default
+  spotlight1.shadow.mapSize.height = 312; // default
+  spotlight1.shadow.camera.near = 0.5; // default
+  spotlight1.shadow.camera.far = 500; // default
+  spotlight1.shadow.focus = 2; // default
   scene.add(spotlight1);
 
   const spotlight2 = new THREE.SpotLight(0xffffff);
   spotlight2.intensity = 0.7;
   spotlight2.distance = 0;
-  spotlight2.decay = 1.2;
+  spotlight2.decay = 2.4;
   spotlight2.angle = 0.4;
   spotlight2.penumbra = 1;
   spotlight2.position.x = 19.91;
-  spotlight2.position.y = -9.86;
+  spotlight2.position.y = -3.5;
   spotlight2.position.z = 49.69;
+  spotlight2.castShadow = true;
   scene.add(spotlight2);
+
+  const spotlight3 = new THREE.SpotLight(0xffffff);
+  spotlight3.intensity = 0.7;
+  spotlight3.distance = 0;
+  spotlight3.decay = 2.4;
+  spotlight3.angle = 0.4;
+  spotlight3.penumbra = 1;
+  spotlight3.position.x = 0;
+  spotlight3.position.y = 100;
+  spotlight3.position.z = -100;
+  spotlight3.castShadow = true;
+  const spotlightHelper = new THREE.SpotLightHelper(spotlight3);
+  scene.add(spotlight3, spotlightHelper);
+
+  const spotlight4 = new THREE.SpotLight(0xffffff);
+  spotlight4.intensity = 0.7;
+  spotlight4.distance = 0;
+  spotlight4.decay = 2.4;
+  spotlight4.angle = 0.4;
+  spotlight4.penumbra = 1;
+  spotlight4.position.x = 30;
+  spotlight4.position.y = -3.5;
+  spotlight4.position.z = 7;
+  spotlight4.castShadow = true;
+  scene.add(spotlight4);
 
   const pointLight = new THREE.PointLight(0xffffff);
   const pointLight2 = new THREE.PointLight(0xffffff);
   const pointLight3 = new THREE.PointLight(0xffffff);
-  pointLight3.intensity = 0.2;
-  pointLight3.castShadow = true;
-  pointLight3.position.y = 100;
-  pointLight3.position.x = 210;
-  pointLight3.position.z = -20;
-  const directinalLight = new THREE.DirectionalLight(0xffffff);
-  directinalLight.castShadow = true;
-  directinalLight.position.set(20, 100, 10);
-  directinalLight.target.position.set(0, 10, 10);
-  directinalLight.intensity = 0.4;
-  pointLight2.intensity = 0.6;
-  pointLight2.distance = 40;
-  pointLight2.decay = 0.2;
-  pointLight2.position.x = 50;
-  pointLight2.position.y = 37.56;
-  pointLight2.position.z = -57.22;
-  pointLight2.castShadow = true;
-  const pointLightHelper = new THREE.PointLightHelper(pointLight3);
-  pointLight.castShadow = true;
   pointLight.intensity = 0.4;
   pointLight.distance = 25;
   pointLight.decay = 0.002;
-  pointLight.position.x = -37.68;
-  pointLight.position.y = 20;
-  pointLight.position.z = -60;
   pointLight.castShadow = true;
+  pointLight.position.set(-37.68, 20, -60);
+  pointLight2.intensity = 0.4;
+  pointLight2.distance = 25;
+  pointLight2.decay = 0.002;
+  pointLight2.castShadow = true;
+  pointLight2.position.set(50, 20, -60.22);
+  pointLight3.intensity = 0.4;
+  pointLight3.castShadow = true;
+  pointLight3.position.set(-50.68, 20, -20);
+  pointLight3.distance = 25;
+  pointLight3.decay = 0.002;
+  pointLight3.castShadow = true;
 
-  const lightgui = new GUI();
+  const pointLightHelper = new THREE.PointLightHelper(pointLight3);
 
-  const pointLightFolder = lightgui.addFolder("THREE PointLight");
-  pointLightFolder.add(pointLight2, "intensity", 0, 1, 0.01);
-  pointLightFolder.add(pointLight2, "distance", 0, 100, 0.01);
-  pointLightFolder.add(pointLight2, "decay", 0, 4, 0.1);
-  pointLightFolder.add(pointLight2.position, "x", -50, 50, 0.01);
-  pointLightFolder.add(pointLight2.position, "y", -50, 50, 0.01);
-  pointLightFolder.add(pointLight2.position, "z", -50, 50, 0.01);
-  pointLightFolder.open();
   const pointLightHelper1 = new THREE.PointLightHelper(pointLight2);
-  scene.add(pointLight, pointLight2, pointLight3, pointLightHelper1);
+  scene.add(
+    pointLight,
+    pointLight2,
+    pointLight3,
+    pointLightHelper1,
+    pointLightHelper
+  );
 
   window.addEventListener("click", onMouseClick);
   window.addEventListener("mousemove", onMouseHover);
@@ -873,46 +988,6 @@ function init() {
         .start();
     }
   }
-
-  // const boxGeometry = new THREE.BoxGeometry(20, 20, 20).toNonIndexed();
-
-  // position = boxGeometry.attributes.position;
-  // const colorsBox = [];
-
-  // for (let i = 0, l = position.count; i < l; i++) {
-  //   color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
-  //   colorsBox.push(color.r, color.g, color.b);
-  // }
-
-  // boxGeometry.setAttribute(
-  //   "color",
-  //   new THREE.Float32BufferAttribute(colorsBox, 3)
-  // );
-
-  // for (let i = 0; i < 500; i++) {
-  //   const boxMaterial = new THREE.MeshPhongMaterial({
-  //     specular: 0xffffff,
-  //     flatShading: true,
-  //     vertexColors: true,
-  //   });
-  //   boxMaterial.color.setHSL(
-  //     Math.random() * 0.2 + 0.5,
-  //     0.75,
-  //     Math.random() * 0.25 + 0.75
-  //   );
-
-  //   const box = new THREE.Mesh(boxGeometry, boxMaterial);
-  //   box.position.x = Math.floor(Math.random() * 20 - 10) * 20;
-  //   box.position.y = Math.floor(Math.random() * 20) * 20 + 10;
-  //   box.position.z = Math.floor(Math.random() * 20 - 10) * 20;
-
-  //   scene.add(box);
-  //   objects.push(box);
-  // }
-
-  //
-
-  //
 
   window.addEventListener("resize", onWindowResize);
 }
