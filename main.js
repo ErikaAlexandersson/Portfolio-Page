@@ -1,10 +1,8 @@
 import * as THREE from "three";
 
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
-import { FrontSide } from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import { GUI } from "dat.gui";
-import { SpotLightHelper } from "three";
 
 let camera, scene, renderer, controls;
 
@@ -37,9 +35,14 @@ function init() {
   scene.background = new THREE.Color(0xffffff);
   scene.fog = new THREE.Fog(0xffffff, 0, 750);
 
-  const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
+  const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.35);
   light.position.set(0.5, 1, 0.75);
   scene.add(light);
+
+  const ambientLight = new THREE.AmbientLight(0xf5f1e7);
+  ambientLight.intensity = 0;
+
+  scene.add(ambientLight);
 
   controls = new PointerLockControls(camera, document.body);
 
@@ -63,6 +66,12 @@ function init() {
 
   controls.addEventListener("lock", function () {
     instructions.style.display = "none";
+    const dimAmbientLight = new TWEEN.Tween(ambientLight)
+      .to({ intensity: 0.5 }, 1000)
+      .start();
+    const dimHemisphereLight = new TWEEN.Tween(light)
+      .to({ intensity: 0.55 }, 1000)
+      .start();
     console.log("Nu är vi i lock");
     // console.log(arrowControls.childNodes);
     move = true;
@@ -188,7 +197,7 @@ function init() {
     displacementScale: 1,
     roughnessMap: roughness,
   });
-  floorMaterial.roughness = 0.4;
+  floorMaterial.roughness = 2;
   floorMaterial.encoding = THREE.sRGBEncoding;
 
   let floorGeometry = new THREE.PlaneGeometry(300, 300, 100, 100);
@@ -253,20 +262,19 @@ function init() {
     scene.add(wireLoop);
     wireLoop.position.x = 20 + i;
   }
-  console.log(wires);
   wires[0].position.set(-65, 60, -85);
   wires[0].castShadow = true;
   wires[1].position.set(35, 60, -85);
   wires[1].castShadow = true;
   wires[2].position.set(65, 60, -85);
   wires[2].castShadow = true;
-  wires[3].position.set(-85, 60, -35);
+  wires[3].position.set(-85, 60, -25);
   wires[3].castShadow = true;
-  wires[4].position.set(-85, 60, -5);
+  wires[4].position.set(-85, 60, 6);
   wires[4].castShadow = true;
-  wires[5].position.set(90, 60, -5);
+  wires[5].position.set(90, 60, 5);
   wires[5].castShadow = true;
-  wires[6].position.set(90, 60, -35);
+  wires[6].position.set(90, 60, -25);
   wires[6].castShadow = true;
   wires[7].position.set(-20, 60, 60);
   wires[7].castShadow = true;
@@ -281,13 +289,13 @@ function init() {
   const pillar3 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar4 = new THREE.Mesh(pillarSize, pillarMaterial);
   pillar1.userData.name = "JavaScript";
-  pillar1.castShadow = true;
   pillar1.position.set(50, 5, -61);
   pillar2.userData.name = "HTML";
   pillar2.position.set(-37, 5, -61);
-  pillar2.castShadow = true;
-  pillar3.position.set(-62, 5, -20);
-  pillar4.position.set(56, 5, -20);
+  pillar2.userData.name = "Vue3";
+  pillar3.position.set(-62, 5, -10);
+  pillar4.userData.name = "Crumble";
+  pillar4.position.set(63, 5, -10);
 
   scene.add(pillar1, pillar2, pillar3, pillar4, wire1);
 
@@ -331,9 +339,7 @@ function init() {
     map: informationBoardTexture4,
   });
   const informationBoardSize = new THREE.BoxGeometry(10, 10, 0.2, 50);
-  const informationBoardMaterial = new THREE.MeshStandardMaterial({
-    color: 0xb9bf9f,
-  });
+
   const informationBoard1 = new THREE.Mesh(
     informationBoardSize,
     informationBoardMaterial1
@@ -355,26 +361,24 @@ function init() {
 
   const lookAt = new THREE.Vector3(0, 12, 10);
   informationBoard1.lookAt(lookAt);
-  informationBoard1.position.y = 10;
-  informationBoard1.position.x = 50;
-  informationBoard1.position.z = -60;
+  informationBoard1.position.set(50, 10, -60);
   informationBoard1.userData.name = "JavaScript";
   informationBoard1.scale.set(1, 1, 1);
+
   const lookAt2 = new THREE.Vector3(0, 12, 10);
   informationBoard2.lookAt(lookAt2);
-  informationBoard2.position.y = 10;
+  informationBoard2.position.set(-37, 10, -60);
   informationBoard2.userData.name = "HTML";
-  informationBoard2.position.x = -37;
-  informationBoard2.position.z = -60;
-  informationBoard3.position.y = 10;
-  informationBoard3.position.x = -60;
-  informationBoard3.position.z = -20;
+
+  const lookAt4 = new THREE.Vector3(40, 32, 0);
+  informationBoard3.lookAt(lookAt4);
+  informationBoard3.position.set(-60, 10, -10);
   informationBoard3.userData.name = "Vue3";
-  informationBoard3.lookAt(pillar3.position);
-  informationBoard4.position.x = 53;
-  informationBoard4.position.z = -20;
-  informationBoard4.position.y = 10;
+  const lookAt3 = new THREE.Vector3(-40, 32, 0);
+  informationBoard4.lookAt(lookAt3);
+  informationBoard4.position.set(62, 10, -10);
   informationBoard4.userData.name = "Crumble";
+
   scene.add(
     informationBoard1,
     informationBoard2,
@@ -445,27 +449,6 @@ function init() {
 
   scene.background = new THREE.Color(0x000011);
 
-  const projectMaterials = [
-    new THREE.MeshPhysicalMaterial({
-      color: "0xffffff", //right,
-    }),
-    new THREE.MeshPhysicalMaterial({
-      color: "0xffffff", //right
-    }),
-    new THREE.MeshBasicMaterial({
-      color: "0xffffff", // top
-    }),
-    new THREE.MeshBasicMaterial({
-      color: "0xffffff", // bottom
-    }),
-    new THREE.MeshBasicMaterial({
-      map: texture, // front
-    }),
-    new THREE.MeshPhysicalMaterial({
-      color: "0xffffff", //back
-    }),
-  ];
-
   const project1 = new THREE.Mesh(geometry, [
     new THREE.MeshPhysicalMaterial({
       color: "0xffffff", //right,
@@ -486,9 +469,7 @@ function init() {
       color: "0xffffff", //back
     }),
   ]);
-  project1.position.x = -48;
-  project1.position.z = -85;
-  project1.position.y = 32;
+  project1.position.set(-48, 32, -85);
   project1.castShadow = true;
   project1.userData.name = "ProjHTML";
 
@@ -512,9 +493,7 @@ function init() {
       color: "0xffffff", //back
     }),
   ]);
-  project2.position.x = 48;
-  project2.position.z = -85;
-  project2.position.y = 32;
+  project2.position.set(48, 32, -85);
   project2.castShadow = true;
   project2.userData.name = "ProjJavaScript";
 
@@ -539,9 +518,7 @@ function init() {
       color: "0xffffff", //back
     }),
   ]);
-  project3.position.x = -85;
-  project3.position.y = 32;
-  project3.position.z = -20;
+  project3.position.set(-85, 32, -10);
   project3.castShadow = true;
   project3.userData.name = "ProjVue";
 
@@ -565,9 +542,7 @@ function init() {
       color: "0xffffff", //back
     }),
   ]);
-  project4.position.x = 90;
-  project4.position.y = 32;
-  project4.position.z = -20;
+  project4.position.set(90, 32, -10);
   project4.castShadow = true;
   project4.userData.name = "ProjCrumble";
 
@@ -593,10 +568,8 @@ function init() {
   ]);
   project5.position.set(0, 32, 60);
   project5.castShadow = true;
+  project5.userData.name = "About";
 
-  informationBoard4.lookAt(pillar4.position);
-
-  //hämtar det du vill ha till scenen
   scene.add(
     project1,
     project2,
@@ -609,228 +582,136 @@ function init() {
     project5
   );
 
-  const ambientLight = new THREE.AmbientLight(0xf5f1e7);
-  ambientLight.intensity = 0.1;
-
-  scene.add(ambientLight);
-
-  const spotlight1 = new THREE.SpotLight(0xffffff);
-  spotlight1.intensity = 0.7;
-  spotlight1.distance = 0;
-  spotlight1.decay = 2.4;
-  spotlight1.angle = 0.4;
-  spotlight1.penumbra = 1;
-  spotlight1.position.x = -9.86;
-  spotlight1.position.y = -3.5;
-  spotlight1.position.z = 18.81;
+  const spotlight1 = new THREE.SpotLight(0xffffff, 0.7, 0, 0.4, 1, 2.4);
+  spotlight1.position.set(-28.86, -3.5, 49.69);
   spotlight1.castShadow = true;
-  spotlight1.shadow.mapSize.width = 512; // default
-  spotlight1.shadow.mapSize.height = 312; // default
-  spotlight1.shadow.camera.near = 0.5; // default
-  spotlight1.shadow.camera.far = 500; // default
-  spotlight1.shadow.focus = 2; // default
   scene.add(spotlight1);
 
-  const spotlight2 = new THREE.SpotLight(0xffffff);
-  spotlight2.intensity = 0.7;
-  spotlight2.distance = 0;
-  spotlight2.decay = 2.4;
-  spotlight2.angle = 0.4;
-  spotlight2.penumbra = 1;
-  spotlight2.position.x = 19.91;
-  spotlight2.position.y = -3.5;
-  spotlight2.position.z = 49.69;
+  const spotlight2 = new THREE.SpotLight(0xffffff, 0.7, 0, 0.4, 1, 2.4);
+  spotlight2.position.set(19.91, -3.5, 49.69);
   spotlight2.castShadow = true;
   scene.add(spotlight2);
 
-  const spotlight3 = new THREE.SpotLight(0xffffff);
-  spotlight3.intensity = 0.7;
-  spotlight3.distance = 0;
-  spotlight3.decay = 2.4;
-  spotlight3.angle = 0.4;
-  spotlight3.penumbra = 1;
-  spotlight3.position.x = 0;
-  spotlight3.position.y = 100;
-  spotlight3.position.z = -100;
+  const spotlight3 = new THREE.SpotLight(0xffffff, 0.7, 300, 0.5, 1, 2.4);
+  spotlight3.position.set(0, -19.5, -49.69);
   spotlight3.castShadow = true;
-  const spotlightHelper = new THREE.SpotLightHelper(spotlight3);
-  scene.add(spotlight3, spotlightHelper);
 
-  const spotlight4 = new THREE.SpotLight(0xffffff);
-  spotlight4.intensity = 0.7;
-  spotlight4.distance = 0;
-  spotlight4.decay = 2.4;
-  spotlight4.angle = 0.4;
-  spotlight4.penumbra = 1;
-  spotlight4.position.x = 30;
-  spotlight4.position.y = -3.5;
-  spotlight4.position.z = 7;
+  scene.add(spotlight3);
+
+  const pointLigthz = new THREE.PointLight(0xffffff, 0.7, 100, 2);
+  pointLigthz.position.set(0, 80, 30);
+  scene.add(pointLigthz);
+
+  const spotlight4 = new THREE.SpotLight(0xffffff, 0.4, 0, 0.5, 1, 2);
+  spotlight4.position.set(10, -3.5, 1);
   spotlight4.castShadow = true;
-  scene.add(spotlight4);
 
-  const pointLight = new THREE.PointLight(0xffffff);
-  const pointLight2 = new THREE.PointLight(0xffffff);
-  const pointLight3 = new THREE.PointLight(0xffffff);
-  pointLight.intensity = 0.4;
-  pointLight.distance = 25;
-  pointLight.decay = 0.002;
+  const spotlight5 = new THREE.SpotLight(0xffffff, 0.4, 0, 0.5, 1, 2);
+  spotlight5.position.set(-10, -3.5, 1);
+  spotlight5.castShadow = true;
+  scene.add(spotlight5, spotlight4, spotlight4);
+
+  const pointLight = new THREE.PointLight(0xd3d3d3, 0.2, 20, 0.1);
   pointLight.castShadow = true;
-  pointLight.position.set(-37.68, 20, -60);
-  pointLight2.intensity = 0.4;
-  pointLight2.distance = 25;
-  pointLight2.decay = 0.002;
+  pointLight.position.set(-37.68, 15, -60);
+
+  const pointLight2 = new THREE.PointLight(0xffffff, 0.2, 20, 0.1);
   pointLight2.castShadow = true;
-  pointLight2.position.set(50, 20, -60.22);
-  pointLight3.intensity = 0.4;
-  pointLight3.castShadow = true;
-  pointLight3.position.set(-50.68, 20, -20);
-  pointLight3.distance = 25;
-  pointLight3.decay = 0.002;
-  pointLight3.castShadow = true;
+  pointLight2.position.set(50, 15, -60.22);
 
-  const pointLightHelper = new THREE.PointLightHelper(pointLight3);
+  const pointLight3 = new THREE.PointLight(0xffffff, 0.2, 20, 0.1);
+  pointLight3.castShadow = true;
+  pointLight3.position.set(-57, 15, -10);
 
-  const pointLightHelper1 = new THREE.PointLightHelper(pointLight2);
-  scene.add(
-    pointLight,
-    pointLight2,
-    pointLight3,
-    pointLightHelper1,
-    pointLightHelper
-  );
+  const pointLight4 = new THREE.PointLight(0xffffff, 0.2, 20, 0.1);
+  pointLight4.castShadow = true;
+  pointLight4.position.set(63, 15, -10);
+  scene.add(pointLight, pointLight2, pointLight3, pointLight4);
 
   window.addEventListener("click", onMouseClick);
-  window.addEventListener("mousemove", onMouseHover);
+
   const mouse = new THREE.Vector2();
 
-  function onMouseHover(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    let intersects = raycaster.intersectObjects(scene.children);
-    intersects.forEach((object) => {
-      if (
-        object.object.userData.name === "HTML" ||
-        object.object.userData.name === "JavaScript"
-      ) {
-        object.object.material.aoMapIntensity = 0;
-      }
-    });
-  }
-
-  let siblingObject = null;
   let HTMLLink = document.querySelector(".link-HTML");
   let isZooming = false;
+  let clickedObject = null;
 
   function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
 
-    let clickedObject = null;
     let intersects = raycaster.intersectObjects(scene.children);
     intersects.forEach((object) => {
-      console.log(object.object.userData);
-      if (object.object.userData.name === "JavaScript") {
+      if (object.object.userData.name === "ProjJavaScript") {
+        backText.className = "ProjBack";
         clickedObject = object;
         HTMLLink.setAttribute(
           "href",
           "https://github.com/ErikaAlexandersson/Native-JavaScript"
         );
-      }
-      if (object.object.userData.name === "ProjVue") {
-        clickedObject = object;
-        goToLeftProject(clickedObject);
-      }
-      if (object.object.userData.name === "Vue3") {
-        clickedObject = object;
-        goToLeftInfoboard(clickedObject);
-      }
-      if (object.object.userData.name === "Crumble") {
-        goToRightInfoboard(clickedObject);
-      }
-      if (object.object.userData.name === "ProjCrumble") {
-        clickedObject = object;
-        goToRightProject(clickedObject);
-      }
-      if (object.object.userData.name === "ProjHTML") {
-        clickedObject = object;
         goToProject(clickedObject);
       }
-      if (object.object.userData.name === "HTML") {
+      if (object.object.userData.name === "ProjVue") {
+        backText.className = "projLeft";
+        clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/receptgeneratorn"
+        );
+        goToProject(clickedObject);
+      }
+      if (object.object.userData.name === "Vue3") {
+        backText.className = "left";
         clickedObject = object;
         goToInfoboard(clickedObject);
       }
-      if (object.object.userData.name === "ProjJavaScript") {
+      if (object.object.userData.name === "Crumble") {
         clickedObject = object;
-        goToProject(clickedObject, siblingObject);
+        backText.className = "right";
+        goToInfoboard(clickedObject);
       }
-      if (object.object.userData.name === "JavaScript") {
+      if (object.object.userData.name === "ProjCrumble") {
+        backText.className = "projRight";
+        clickedObject = object;
+        goToProject(clickedObject);
+      }
+      if (object.object.userData.name === "ProjHTML") {
+        backText.className = "projBack";
+        clickedObject = object;
+        goToProject(clickedObject);
+      }
+      if (
+        object.object.userData.name === "HTML" ||
+        object.object.userData.name === "JavaScript"
+      ) {
+        backText.className = "back";
         clickedObject = object;
         goToInfoboard(clickedObject);
       }
     });
   }
 
-  function goToRightProject(clickedObject) {
-    const cameraMove = new TWEEN.Tween(camera.position)
-      .to(
-        {
-          x: clickedObject.object.position.x - 30,
-          y: clickedObject.object.position.y,
-          z: clickedObject.object.position.z,
-        },
-        3000
-      )
-      // .easing(TWEEN.Easing.Cubic.In)
-      .onUpdate(() => {
-        camera.lookAt(
-          clickedObject.object.position.x,
-          clickedObject.object.position.y,
-          clickedObject.object.position.z
-        );
-      })
-      .onComplete(() => {
-        textContainer.style.display = "block";
-        HTMLLink.className = "link-HTML-active";
-      })
-      .start();
-  }
-
-  function goToLeftProject(clickedObject) {
-    const cameraMove = new TWEEN.Tween(camera.position)
-      .to(
-        {
-          x: clickedObject.object.position.x + 30,
-          y: clickedObject.object.position.y,
-          z: clickedObject.object.position.z,
-        },
-        3000
-      )
-      // .easing(TWEEN.Easing.Cubic.In)
-      .onUpdate(() => {
-        camera.lookAt(
-          clickedObject.object.position.x,
-          clickedObject.object.position.y,
-          clickedObject.object.position.z
-        );
-      })
-      .onComplete(() => {
-        textContainer.style.display = "block";
-        HTMLLink.className = "link-HTML-active";
-      })
-      .start();
-  }
-
   function goToProject(clickedObject) {
-    console.log(camera.position);
-    console.log(clickedObject.object);
+    let positionX = 0;
+    let positionY = 0;
+    let positionZ = 0;
+
+    if (backText.className === "projLeft") {
+      positionX = 30;
+    }
+    if (backText.className === "projBack") {
+      positionZ = 30;
+    }
+    if (backText.className === "projRight") {
+      positionX = -30;
+    }
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
         {
-          x: clickedObject.object.position.x,
-          y: clickedObject.object.position.y,
-          z: clickedObject.object.position.z + 30,
+          x: clickedObject.object.position.x + positionX,
+          y: clickedObject.object.position.y + positionY,
+          z: clickedObject.object.position.z + positionZ,
         },
         3000
       )
@@ -847,9 +728,6 @@ function init() {
         HTMLLink.className = "link-HTML-active";
       })
       .start();
-  }
-  function goToLeftInfoboard(clickedObject) {
-    updateLeftCamera(clickedObject);
   }
 
   function goToInfoboard(clickedObject) {
@@ -857,25 +735,58 @@ function init() {
   }
 
   let backText = document.querySelector(".back");
+  backText.addEventListener("click", getBack);
   let textContainer = document.querySelector(".text-container");
   textContainer.style.display = "none";
   backText.addEventListener("click", getBack);
-  console.log(backText);
 
-  function getBack() {
-    isZooming = false;
+  function getBack(event) {
     textContainer.style.display = "none";
+    console.log(clickedObject.object.userData.name);
+    isZooming = false;
+    let positionX = 0;
+    let positionY = 0;
+    let positionZ = 0;
+    if (backText.className === "back") {
+      positionY = 5;
+      positionZ = 20;
+      scaleInformation(clickedObject);
+    }
+    if (backText.className === "projBack") {
+      positionY = -10;
+      positionZ = 20;
+    }
+    if (backText.className === "right") {
+      positionY = 5;
+      positionX = -20;
+      scaleInformation(clickedObject);
+    }
+    if (backText.className === "projRight") {
+      positionY = -10;
+      positionX = -20;
+    }
+    if (backText.className === "left") {
+      positionY = 5;
+      positionX = -20;
+      scaleInformation(clickedObject);
+    }
+    if (backText.className === "projLeft") {
+      positionY = -8;
+      positionX = 20;
+    }
+    console.log(backText.className);
+
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
         {
-          x: camera.position.x,
-          y: 17,
-          z: camera.position.z + 20,
+          x: camera.position.x + positionX,
+          y: camera.position.y + positionY,
+          z: camera.position.z + positionZ,
         },
         1000
       )
       .onUpdate(() => {
-        dimmUp();
+        dimmUp(clickedObject);
       })
       .onComplete(() => {
         controls.lock();
@@ -883,71 +794,90 @@ function init() {
       .start();
   }
 
-  function dimmUp() {
-    const dimmer1 = new TWEEN.Tween(spotlight1)
+  function dimmUp(clickedObject) {
+    let whatPointlight = "";
+    let whatSpotlight = "";
+    if (clickedObject.object.userData.name === "HTML") {
+      whatPointlight = pointLight;
+      whatSpotlight = spotlight1;
+    }
+    if (clickedObject.object.userData.name === "JavaScript") {
+      whatPointlight = pointLight2;
+      whatSpotlight = spotlight2;
+    }
+    if (clickedObject.object.userData.name === "Vue3") {
+      whatPointlight = pointLight3;
+      whatSpotlight = spotlight4;
+    }
+    if (clickedObject.object.userData.name === "Crumble") {
+      whatPointlight = pointLight4;
+      whatSpotlight = spotlight5;
+    }
+    const dimmer1 = new TWEEN.Tween(whatPointlight)
       .to({ intensity: 0.6 }, 1000)
       .start();
-    console.log(spotlight1.intensity);
-    const dimmerPoint = new TWEEN.Tween(pointLight)
+    const dimmerPoint = new TWEEN.Tween(whatSpotlight)
       .to({ intensity: 0.8 }, 1000)
       .start();
     const dimAmbientLight = new TWEEN.Tween(ambientLight)
-      .to({ intensity: 1.5 }, 1000)
+      .to({ intensity: 0.5 }, 1000)
       .start();
   }
 
-  function dimmLight() {
-    const dimmer1 = new TWEEN.Tween(spotlight1)
+  function dimmLight(clickedObject) {
+    let whatSpotlight = "";
+    let whatPointlight = "";
+    if (clickedObject.object.userData.name === "HTML") {
+      whatSpotlight = spotlight1;
+      whatPointlight = pointLight;
+    }
+    if (clickedObject.object.userData.name === "JavaScript") {
+      whatPointlight = pointLight2;
+      whatSpotlight = spotlight2;
+    }
+    if (clickedObject.object.userData.name === "Vue3") {
+      whatPointlight = pointLight3;
+      whatSpotlight = spotlight4;
+    }
+    if (clickedObject.object.userData.name === "Crumble") {
+      whatPointlight = pointLight4;
+      whatSpotlight = spotlight5;
+    }
+    const dimmer1 = new TWEEN.Tween(whatSpotlight)
       .to({ intensity: 0 }, 1000)
       .start();
     const dimmerPoint = new TWEEN.Tween(pointLight)
       .to({ intensity: 0 }, 1000)
       .start();
     const dimAmbientLight = new TWEEN.Tween(ambientLight)
-      .to({ intensity: 0.8 }, 1000)
-      .start();
-  }
-
-  function blackOut() {
-    const blackOutambientLight = new TWEEN.Tween(ambientLight)
-      .to({ intensity: 0 }, 1000)
-      .start();
-  }
-
-  function updateLeftCamera(clickedObject) {
-    isZooming = true;
-    const cameraMove = new TWEEN.Tween(camera.position)
-      .to(
-        {
-          x: clickedObject.object.position.x + 10,
-          y: clickedObject.object.position.y + 8,
-          z: clickedObject.object.position.z,
-        },
-        3000
-      )
-      // .easing(TWEEN.Easing.Cubic.In)
-      .onUpdate(() => {
-        camera.lookAt(
-          clickedObject.object.position.x,
-          clickedObject.object.position.y,
-          clickedObject.object.position.z
-        );
-      })
-      .onComplete(() => {
-        scaleInformation(clickedObject);
-        dimmLight();
-      })
+      .to({ intensity: 0.1 }, 1000)
       .start();
   }
 
   function updateCamera(clickedObject) {
+    let positionX = 0;
+    let positionY = 0;
+    let positionZ = 0;
     isZooming = true;
+
+    if (backText.className === "back") {
+      positionY = 5;
+      positionZ = 10;
+    }
+    if (backText.className === "left") {
+      positionX = 10;
+      positionY = 8;
+    }
+    if (backText.className === "right") {
+      positionX = -10;
+      positionY = 7;
+    }
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
         {
-          x: clickedObject.object.position.x,
-          y: clickedObject.object.position.y + 5,
-          z: clickedObject.object.position.z + 10,
+          x: clickedObject.object.position.x + positionX,
+          y: clickedObject.object.position.y + positionY,
+          z: clickedObject.object.position.z + positionZ,
         },
         3000
       )
@@ -961,13 +891,13 @@ function init() {
       })
       .onComplete(() => {
         scaleInformation(clickedObject);
-        dimmLight();
+        dimmLight(clickedObject);
       })
       .start();
   }
 
   function scaleInformation(clickedObject) {
-    if ((isZooming = true)) {
+    if (isZooming === true) {
       let tween = new TWEEN.Tween(clickedObject.object.scale)
         .to({ x: 2.3, y: 1.2, z: 0 }, 1000)
         .yoyo(true)
@@ -977,13 +907,13 @@ function init() {
         })
         .start();
     }
-    if ((isZooming = false)) {
+    if (isZooming === false) {
       let tween = new TWEEN.Tween(clickedObject.object.scale)
         .to({ x: 1, y: 1, z: 0 }, 1000)
         .yoyo(true)
         .onComplete(() => {
-          textContainer.style.display = "block";
-          HTMLLink.className = "link-HTML-active";
+          // textContainer.style.display = "block";
+          // HTMLLink.className = "link-HTML-active";
         })
         .start();
     }
@@ -1018,8 +948,6 @@ function animate() {
 
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
-
-    // velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
 
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
