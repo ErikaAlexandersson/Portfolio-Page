@@ -681,6 +681,11 @@ function init() {
         clickedObject = object;
         goToProject(clickedObject);
       }
+      if (object.object.userData.name === "ProjJavaScript") {
+        backText.className = "projBack";
+        clickedObject = object;
+        goToProject(clickedObject);
+      }
       if (
         object.object.userData.name === "HTML" ||
         object.object.userData.name === "JavaScript"
