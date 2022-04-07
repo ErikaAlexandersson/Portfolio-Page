@@ -47,6 +47,7 @@ function init() {
   controls = new PointerLockControls(camera, document.body);
 
   const instructions = document.getElementById("instructions");
+  const spaceInfo = document.getElementById("space-info");
   const arrowControls = document.getElementById("controls-during");
   instructions.addEventListener("click", function () {
     controls.lock();
@@ -59,12 +60,14 @@ function init() {
       move = false;
     }
     if (e.key === " " && move === false) {
+      arrowControls.style.opacity = 1;
       controls.unlock();
       move = true;
     }
   });
 
   controls.addEventListener("lock", function () {
+    spaceInfo.innerHTML = "Tryck mellanslag för att avsluta helskärm";
     instructions.style.display = "none";
     const dimAmbientLight = new TWEEN.Tween(ambientLight)
       .to({ intensity: 0.5 }, 1000)
@@ -72,47 +75,50 @@ function init() {
     const dimHemisphereLight = new TWEEN.Tween(light)
       .to({ intensity: 0.55 }, 1000)
       .start();
-    console.log("Nu är vi i lock");
-    // console.log(arrowControls.childNodes);
+    arrowControls.style.opacity = 1;
+
     move = true;
   });
 
   controls.addEventListener("unlock", function () {
-    // blocker.style.display = "block";
-    // instructions.style.display = "";
-    // arrowControls.style.display = "flex";
-    console.log("Nu är vi i unlock");
+    spaceInfo.innerHTML = "Tryck mellanslag två gånger för att strosa runt";
+    arrowControls.style.opacity = 0;
     move = false;
   });
 
   scene.add(controls.getObject());
 
-  let pElement = document.querySelectorAll("p");
+  const w = document.querySelector("#w");
+  w.style.opacity = 0.4;
+  const a = document.querySelector("#a");
+  a.style.opacity = 0.4;
+  const s = document.querySelector("#s");
+  s.style.opacity = 0.4;
+  const d = document.querySelector("#d");
+  d.style.opacity = 0.4;
   const onKeyDown = function (event) {
-    // pElement.forEach((element) => {
-    //   if (element.firstChild.textContent === "A") {
-    //     console.log("A är hittat");
-    //   }
-    //   console.log(element.firstChild.textContent);
-    // });
     switch (event.code) {
       case "ArrowUp":
       case "KeyW":
+        w.style.opacity = 1;
         moveForward = true;
         break;
 
       case "ArrowLeft":
       case "KeyA":
+        a.style.opacity = 1;
         moveLeft = true;
         break;
 
       case "ArrowDown":
       case "KeyS":
+        s.style.opacity = 1;
         moveBackward = true;
         break;
 
       case "ArrowRight":
       case "KeyD":
+        d.style.opacity = 1;
         moveRight = true;
         break;
     }
@@ -122,21 +128,25 @@ function init() {
     switch (event.code) {
       case "ArrowUp":
       case "KeyW":
+        w.style.opacity = 0.4;
         moveForward = false;
         break;
 
       case "ArrowLeft":
       case "KeyA":
+        a.style.opacity = 0.4;
         moveLeft = false;
         break;
 
       case "ArrowDown":
       case "KeyS":
+        s.style.opacity = 0.4;
         moveBackward = false;
         break;
 
       case "ArrowRight":
       case "KeyD":
+        d.style.opacity = 0.4;
         moveRight = false;
         break;
     }
@@ -144,6 +154,19 @@ function init() {
 
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);
+
+  for (var z = -1000; z < 1000; z += 20) {
+    var starGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    var starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    var sphere = new THREE.Mesh(starGeometry, starMaterial);
+
+    sphere.position.x = Math.random() * 1000 - 500;
+    sphere.position.y = Math.random() * 1000 - 500;
+    sphere.position.z = z;
+
+    sphere.scale.x = sphere.scale.y = 2;
+    scene.add(sphere);
+  }
 
   raycaster = new THREE.Raycaster();
   renderer = new THREE.WebGLRenderer({
@@ -239,12 +262,13 @@ function init() {
   });
 
   const roof = new THREE.Mesh(
-    new THREE.BoxGeometry(200, 200, 0.2, 50),
+    new THREE.BoxGeometry(200, 165, 0.2, 50),
     roofWoodMaterial
   );
   roof.receiveShadow = true;
   roof.position.y = 90;
   roof.rotation.x -= Math.PI / 2;
+  roof.position.z = -15;
 
   scene.add(roof);
 
@@ -359,13 +383,13 @@ function init() {
     informationBoardMaterial4
   );
 
-  const lookAt = new THREE.Vector3(0, 12, 10);
+  const lookAt = new THREE.Vector3(0, 5, 10);
   informationBoard1.lookAt(lookAt);
   informationBoard1.position.set(50, 10, -60);
   informationBoard1.userData.name = "JavaScript";
   informationBoard1.scale.set(1, 1, 1);
 
-  const lookAt2 = new THREE.Vector3(0, 12, 10);
+  const lookAt2 = new THREE.Vector3(0, 5, 10);
   informationBoard2.lookAt(lookAt2);
   informationBoard2.position.set(-37, 10, -60);
   informationBoard2.userData.name = "HTML";
@@ -387,12 +411,9 @@ function init() {
   );
 
   const wallsize = new THREE.BoxGeometry(200, 120, 3, 400);
-  const sideWallSize = new THREE.BoxGeometry(3, 120, 200, 400);
+  const sideWallSize = new THREE.BoxGeometry(3, 120, 165, 400);
   const geometry = new THREE.BoxGeometry(50, 30, 2, 400);
   const projectSideWall = new THREE.BoxGeometry(3, 30, 50, 400);
-  const wallmaterial = new THREE.MeshStandardMaterial({
-    map: wallTexture,
-  });
 
   const roofTexture = new THREE.TextureLoader();
 
@@ -438,11 +459,11 @@ function init() {
   const wallRight = new THREE.Mesh(sideWallSize, roofMaterial);
   roofMaterial.color.set(0xf7f2eb);
   roofMaterial.opacity = 0.3;
-  wallLeft.position.set(-95, 34, 0);
+  wallLeft.position.set(-95, 34, -14);
   wallLeft.receiveShadow = true;
   wallBack.position.set(0, 34, -96);
   wallBack.receiveShadow = true;
-  wallRight.position.set(100, 34, 0);
+  wallRight.position.set(100, 34, -14);
   wallRight.receiveShadow = true;
   wallFront.position.set(0, 34, 70);
   wallFront.receiveShadow = true;
@@ -664,40 +685,75 @@ function init() {
       if (object.object.userData.name === "Vue3") {
         backText.className = "left";
         clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/receptgeneratorn"
+        );
         goToInfoboard(clickedObject);
       }
       if (object.object.userData.name === "Crumble") {
         clickedObject = object;
         backText.className = "right";
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/dfrosin/test-grupp-projekt"
+        );
         goToInfoboard(clickedObject);
       }
       if (object.object.userData.name === "ProjCrumble") {
         backText.className = "projRight";
         clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/dfrosin/test-grupp-projekt"
+        );
         goToProject(clickedObject);
       }
       if (object.object.userData.name === "ProjHTML") {
         backText.className = "projBack";
         clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/HTML-CSS"
+        );
         goToProject(clickedObject);
       }
       if (object.object.userData.name === "ProjJavaScript") {
         backText.className = "projBack";
         clickedObject = object;
+        "href", "https://github.com/ErikaAlexandersson/Native-JavaScript";
         goToProject(clickedObject);
       }
-      if (
-        object.object.userData.name === "HTML" ||
-        object.object.userData.name === "JavaScript"
-      ) {
+      if (object.object.userData.name === "About") {
+        backText.className = "aboutBack";
+        clickedObject = object;
+        "href", "https://github.com/ErikaAlexandersson";
+        goToProject(clickedObject);
+      }
+      if (object.object.userData.name === "HTML") {
         backText.className = "back";
         clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/HTML-CSS"
+        );
+
+        goToInfoboard(clickedObject);
+      }
+      if (object.object.userData.name === "JavaScript") {
+        backText.className = "back";
+        clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/Native-JavaScript"
+        );
         goToInfoboard(clickedObject);
       }
     });
   }
 
   function goToProject(clickedObject) {
+    spaceInfo.style.display = "none";
     let positionX = 0;
     let positionY = 0;
     let positionZ = 0;
@@ -710,6 +766,9 @@ function init() {
     }
     if (backText.className === "projRight") {
       positionX = -30;
+    }
+    if (backText.className === "aboutBack") {
+      positionZ = -30;
     }
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
@@ -736,6 +795,7 @@ function init() {
   }
 
   function goToInfoboard(clickedObject) {
+    spaceInfo.style.display = "none";
     updateCamera(clickedObject);
   }
 
@@ -747,7 +807,6 @@ function init() {
 
   function getBack(event) {
     textContainer.style.display = "none";
-    console.log(clickedObject.object.userData.name);
     isZooming = false;
     let positionX = 0;
     let positionY = 0;
@@ -772,14 +831,17 @@ function init() {
     }
     if (backText.className === "left") {
       positionY = 5;
-      positionX = -20;
+      positionX = 20;
       scaleInformation(clickedObject);
     }
     if (backText.className === "projLeft") {
       positionY = -8;
       positionX = 20;
     }
-    console.log(backText.className);
+    if (backText.className === "aboutBack") {
+      positionZ = -20;
+      positionY = -8;
+    }
 
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
@@ -795,6 +857,7 @@ function init() {
       })
       .onComplete(() => {
         controls.lock();
+        spaceInfo.style.display = "block";
       })
       .start();
   }
@@ -822,7 +885,7 @@ function init() {
       .to({ intensity: 0.6 }, 1000)
       .start();
     const dimmerPoint = new TWEEN.Tween(whatSpotlight)
-      .to({ intensity: 0.8 }, 1000)
+      .to({ intensity: 0.4 }, 1000)
       .start();
     const dimAmbientLight = new TWEEN.Tween(ambientLight)
       .to({ intensity: 0.5 }, 1000)

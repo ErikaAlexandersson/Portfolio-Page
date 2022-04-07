@@ -11,38 +11,41 @@
     ></script>
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="/main.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@200&family=Permanent+Marker&display=swap");
+    </style>
   </head>
   <body>
     <div id="blocker">
       <div id="instructions">
         <h1 id="header">Erikas galleri</h1>
         <p>
-          Klicka dig runt, genom att trycka på objekten eller strosa fritt med
-          WASD tangerterna
+          Klicka på objekten för att kunna läsa mer, eller strosa fritt med
+          <strong>WASD</strong> tangerterna.
         </p>
-        <p id="click">Klicka här för att starta</p>
+        <button id="start">Starta</button>
       </div>
       <div id="container">
         <div id="controls-during">
-          <div id="w">
+          <div class="w">
             <img src="/assets/arrows/arrow-up-solid.png" />
-            <p>W</p>
+            <p id="w">W</p>
           </div>
-          <div id="a">
+          <div class="a">
             <img src="/assets/arrows/arrow-left-solid.png" />
-            <p>A</p>
+            <p id="a">A</p>
           </div>
-          <div id="s">
-            <p>S</p>
+          <div class="s">
+            <p id="s">S</p>
             <img src="/assets/arrows/arrow-down-solid.png" />
           </div>
-          <div id="d">
-            <p>D</p>
+          <div class="d">
+            <p id="d">D</p>
             <img src="/assets/arrows/arrow-right-solid.png" />
           </div>
         </div>
         <div id="space">
-          <p>Tryck mellanslag för att avslutahelskärm</p>
+          <p id="space-info"></p>
         </div>
       </div>
       <div class="text-container">
