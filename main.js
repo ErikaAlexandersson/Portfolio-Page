@@ -67,7 +67,8 @@ function init() {
   });
 
   controls.addEventListener("lock", function () {
-    spaceInfo.innerHTML = "Tryck mellanslag för att avsluta helskärm";
+    spaceInfo.innerHTML =
+      "Tryck mellanslag för att avsluta helskärm och kunna klicka på projekten för att kunna se närmare";
     instructions.style.display = "none";
     const dimAmbientLight = new TWEEN.Tween(ambientLight)
       .to({ intensity: 0.5 }, 1000)
@@ -181,32 +182,30 @@ function init() {
   // floor
   const floorTexture = new THREE.TextureLoader();
   const albedo = floorTexture.load(
-    "assets/TexturesCom_Wood_PlanksOld4_2x2_1K_albedo.jpeg"
+    "/TexturesCom_Wood_PlanksOld4_2x2_1K_albedo.jpeg"
   );
   albedo.anisotropy = maxAnisotropy;
   albedo.wrapS = THREE.RepeatWrapping;
   albedo.wrapT = THREE.RepeatWrapping;
   albedo.repeat.set(4, 4);
-  const ao = floorTexture.load(
-    "assets/TexturesCom_Wood_PlanksOld4_2x2_1K_ao.png"
-  );
+  const ao = floorTexture.load("/TexturesCom_Wood_PlanksOld4_2x2_1K_ao.png");
   ao.anisotropy = maxAnisotropy;
   ao.wrapS = THREE.RepeatWrapping;
   ao.wrapT = THREE.RepeatWrapping;
   ao.repeat.set(4, 4);
   const height = floorTexture.load(
-    "assets/TexturesCom_Wood_PlanksOld4_2x2_1K_height.png"
+    "/TexturesCom_Wood_PlanksOld4_2x2_1K_height.png"
   );
   height.anisotropy = maxAnisotropy;
   const normal = floorTexture.load(
-    "assets/TexturesCom_Wood_PlanksOld4_2x2_1K_normal.png"
+    "/TexturesCom_Wood_PlanksOld4_2x2_1K_normal.png"
   );
   normal.anisotropy = maxAnisotropy;
   normal.wrapS = THREE.RepeatWrapping;
   normal.wrapT = THREE.RepeatWrapping;
   normal.repeat.set(4, 4);
   const roughness = floorTexture.load(
-    "assets/TexturesCom_Wood_PlanksOld4_2x2_1K_roughness.png"
+    "/TexturesCom_Wood_PlanksOld4_2x2_1K_roughness.png"
   );
   roughness.anisotropy = maxAnisotropy;
   roughness.wrapS = THREE.RepeatWrapping;
@@ -231,23 +230,23 @@ function init() {
   scene.add(floor);
 
   const roofBoards = new THREE.TextureLoader();
-  const roofAlbedo = roofBoards.load("assets/WOODOSB_albedo.png");
+  const roofAlbedo = roofBoards.load("/WoodOSB_albedo.png");
   roofAlbedo.anisotropy = maxAnisotropy;
   roofAlbedo.wrapS = THREE.RepeatWrapping;
   roofAlbedo.wrapT = THREE.RepeatWrapping;
-  const roofAO = roofBoards.load("assets/WOODOSB_ao.png");
+  const roofAO = roofBoards.load("/WoodOSB_ao.png");
   roofAO.anisotropy = maxAnisotropy;
   roofAO.wrapS = THREE.RepeatWrapping;
   roofAO.wrapT = THREE.RepeatWrapping;
-  const roofHeight = roofBoards.load("assets/WOODOSB_height.png");
+  const roofHeight = roofBoards.load("/WoodOSB_height.png");
   roofHeight.anisotropy = maxAnisotropy;
   roofHeight.wrapS = THREE.RepeatWrapping;
   roofHeight.wrapT = THREE.RepeatWrapping;
-  const roofNormal = roofBoards.load("assets/WOODOSB_normal.png");
+  const roofNormal = roofBoards.load("/WoodOSB_normal.png");
   roofNormal.anisotropy = maxAnisotropy;
   roofNormal.wrapS = THREE.RepeatWrapping;
   roofNormal.wrapT = THREE.RepeatWrapping;
-  const roofRoughness = roofBoards.load("assets/WOODOSB_roughness.png");
+  const roofRoughness = roofBoards.load("/WoodOSB_roughness.png");
   roofRoughness.anisotropy = maxAnisotropy;
   roofRoughness.wrapS = THREE.RepeatWrapping;
   roofRoughness.wrapT = THREE.RepeatWrapping;
@@ -312,6 +311,7 @@ function init() {
   const pillar2 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar3 = new THREE.Mesh(pillarSize, pillarMaterial);
   const pillar4 = new THREE.Mesh(pillarSize, pillarMaterial);
+  const pillar5 = new THREE.Mesh(pillarSize, pillarMaterial);
   pillar1.userData.name = "JavaScript";
   pillar1.position.set(50, 5, -61);
   pillar2.userData.name = "HTML";
@@ -320,36 +320,40 @@ function init() {
   pillar3.position.set(-62, 5, -10);
   pillar4.userData.name = "Crumble";
   pillar4.position.set(63, 5, -10);
+  pillar1.userData.name = "Fullstack";
+  pillar5.position.set(0, 5, 35);
 
-  scene.add(pillar1, pillar2, pillar3, pillar4, wire1);
+  scene.add(pillar1, pillar2, pillar3, pillar4, pillar5, wire1);
 
-  const wallTexture = new THREE.TextureLoader().load(
-    "assets/concrete3-albedo.png"
-  );
+  const wallTexture = new THREE.TextureLoader().load("/concrete3-albedo.png");
   wallTexture.magFilter = THREE.NearestFilter;
   wallTexture.roughness = 1;
 
-  const texture = new THREE.TextureLoader().load("assets/home.png");
+  const texture = new THREE.TextureLoader().load("/home.png");
   texture.magFilter = THREE.NearestFilter;
-  const textureProject2 = new THREE.TextureLoader().load("assets/nativeJS.png");
+  const textureProject2 = new THREE.TextureLoader().load("/nativeJS.png");
   textureProject2.magFilter = THREE.NearestFilter;
-  const viteProject = new THREE.TextureLoader().load("assets/vite.jpeg");
-  const crumbleProject = new THREE.TextureLoader().load("assets/crumble.png");
-  const about = new THREE.TextureLoader().load("assets/omMig.png");
+  const viteProject = new THREE.TextureLoader().load("/vite.jpeg");
+  const crumbleProject = new THREE.TextureLoader().load("/crumble.png");
+  const about = new THREE.TextureLoader().load("/hamster.png");
 
   const informationBoardTexture2 = new THREE.TextureLoader().load(
-    "assets/tek_HTML_CSS.png"
+    "/tek_HTML_CSS.png"
   );
 
   const informationBoardTexture1 = new THREE.TextureLoader().load(
-    "assets/tek_JavaScript.png"
+    "/tek_JavaScript.png"
   );
   const informationBoardTexture3 = new THREE.TextureLoader().load(
-    "assets/TekniskInformationVue3.png"
+    "/TekniskInformationVue3.png"
   );
   const informationBoardTexture4 = new THREE.TextureLoader().load(
-    "assets/TekniskInformationCrumble.png"
+    "/TekniskInformationCrumble.png"
   );
+  const informationBoardTexture5 = new THREE.TextureLoader().load(
+    "/TekInfoFullstack.png"
+  );
+
   const informationBoardMaterial1 = new THREE.MeshBasicMaterial({
     map: informationBoardTexture1,
   });
@@ -361,6 +365,9 @@ function init() {
   });
   const informationBoardMaterial4 = new THREE.MeshBasicMaterial({
     map: informationBoardTexture4,
+  });
+  const informationBoardMaterial5 = new THREE.MeshBasicMaterial({
+    map: informationBoardTexture5,
   });
   const informationBoardSize = new THREE.BoxGeometry(10, 10, 0.2, 50);
 
@@ -382,6 +389,10 @@ function init() {
     informationBoardSize,
     informationBoardMaterial4
   );
+  const informationBoard5 = new THREE.Mesh(
+    informationBoardSize,
+    informationBoardMaterial5
+  );
 
   const lookAt = new THREE.Vector3(0, 5, 10);
   informationBoard1.lookAt(lookAt);
@@ -394,20 +405,27 @@ function init() {
   informationBoard2.position.set(-37, 10, -60);
   informationBoard2.userData.name = "HTML";
 
-  const lookAt4 = new THREE.Vector3(40, 32, 0);
-  informationBoard3.lookAt(lookAt4);
-  informationBoard3.position.set(-60, 10, -10);
-  informationBoard3.userData.name = "Vue3";
   const lookAt3 = new THREE.Vector3(-40, 32, 0);
   informationBoard4.lookAt(lookAt3);
   informationBoard4.position.set(62, 10, -10);
   informationBoard4.userData.name = "Crumble";
 
+  const lookAt4 = new THREE.Vector3(40, 32, 0);
+  informationBoard3.lookAt(lookAt4);
+  informationBoard3.position.set(-60, 10, -10);
+  informationBoard3.userData.name = "Vue3";
+
+  const lookAt5 = new THREE.Vector3(0, -5, 10);
+  informationBoard5.lookAt(lookAt5);
+  informationBoard5.position.set(0, 10, 34);
+  informationBoard5.userData.name = "Fullstack";
+
   scene.add(
     informationBoard1,
     informationBoard2,
     informationBoard3,
-    informationBoard4
+    informationBoard4,
+    informationBoard5
   );
 
   const wallsize = new THREE.BoxGeometry(200, 120, 3, 400);
@@ -417,28 +435,28 @@ function init() {
 
   const roofTexture = new THREE.TextureLoader();
 
-  const concreteAlbedo = roofTexture.load("assets/concrete_albedo.png");
+  const concreteAlbedo = roofTexture.load("/concrete_albedo.png");
   concreteAlbedo.anisotropy = maxAnisotropy;
   concreteAlbedo.wrapS = THREE.RepeatWrapping;
   concreteAlbedo.wrapT = THREE.RepeatWrapping;
   concreteAlbedo.repeat.set(4, 4);
-  const concreteAo = roofTexture.load("assets/concrete_ao.png");
+  const concreteAo = roofTexture.load("/concrete_ao.png");
   concreteAo.anisotropy = maxAnisotropy;
   concreteAo.wrapS = THREE.RepeatWrapping;
   concreteAo.wrapT = THREE.RepeatWrapping;
   concreteAo.opacity = 4;
   concreteAo.repeat.set(4, 4);
-  const concreteHeight = roofTexture.load("assets/concrete_height.png");
+  const concreteHeight = roofTexture.load("/concrete_height.png");
   concreteHeight.anisotropy = maxAnisotropy;
   concreteHeight.wrapS = THREE.RepeatWrapping;
   concreteHeight.wrapT = THREE.RepeatWrapping;
   concreteHeight.repeat.set(4, 4);
-  const concreteNormal = roofTexture.load("assets/concrete_normal.png");
+  const concreteNormal = roofTexture.load("/concrete_normal.png");
   concreteNormal.anisotropy = maxAnisotropy;
   concreteNormal.wrapS = THREE.RepeatWrapping;
   concreteNormal.wrapT = THREE.RepeatWrapping;
   concreteNormal.repeat.set(4, 4);
-  const concreteRoughness = roofTexture.load("assets/concrete_roughness.png");
+  const concreteRoughness = roofTexture.load("/concrete_roughness.png");
   concreteRoughness.anisotropy = maxAnisotropy;
   concreteRoughness.wrapS = THREE.RepeatWrapping;
   concreteRoughness.wrapT = THREE.RepeatWrapping;
@@ -589,7 +607,7 @@ function init() {
   ]);
   project5.position.set(0, 32, 60);
   project5.castShadow = true;
-  project5.userData.name = "About";
+  project5.userData.name = "ProjFullstack";
 
   scene.add(
     project1,
@@ -647,7 +665,11 @@ function init() {
   const pointLight4 = new THREE.PointLight(0xffffff, 0.2, 20, 0.1);
   pointLight4.castShadow = true;
   pointLight4.position.set(63, 15, -10);
-  scene.add(pointLight, pointLight2, pointLight3, pointLight4);
+
+  const pointLight5 = new THREE.PointLight(0xffffff, 0.2, 20, 0.1);
+  pointLight5.castShadow = true;
+  pointLight5.position.set(0, 10, 35);
+  scene.add(pointLight, pointLight2, pointLight3, pointLight4, pointLight5);
 
   window.addEventListener("click", onMouseClick);
 
@@ -671,6 +693,12 @@ function init() {
           "href",
           "https://github.com/ErikaAlexandersson/Native-JavaScript"
         );
+        goToProject(clickedObject);
+      }
+      if (object.object.userData.name === "ProjJavaScript") {
+        backText.className = "projBack";
+        clickedObject = object;
+        "href", "https://github.com/ErikaAlexandersson/Native-JavaScript";
         goToProject(clickedObject);
       }
       if (object.object.userData.name === "ProjVue") {
@@ -718,18 +746,27 @@ function init() {
         );
         goToProject(clickedObject);
       }
-      if (object.object.userData.name === "ProjJavaScript") {
-        backText.className = "projBack";
-        clickedObject = object;
-        "href", "https://github.com/ErikaAlexandersson/Native-JavaScript";
-        goToProject(clickedObject);
-      }
-      if (object.object.userData.name === "About") {
+      //Detta är själva tavlan//
+      if (object.object.userData.name === "ProjFullstack") {
         backText.className = "aboutBack";
         clickedObject = object;
-        "href", "https://github.com/ErikaAlexandersson";
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/hamsterwars"
+        );
         goToProject(clickedObject);
       }
+      //Här är infotavlan//
+      if (object.object.userData.name === "Fullstack") {
+        backText.className = "projSide";
+        clickedObject = object;
+        HTMLLink.setAttribute(
+          "href",
+          "https://github.com/ErikaAlexandersson/hamsterwars"
+        );
+        goToInfoboard(clickedObject);
+      }
+
       if (object.object.userData.name === "HTML") {
         backText.className = "back";
         clickedObject = object;
@@ -759,17 +796,18 @@ function init() {
     let positionZ = 0;
 
     if (backText.className === "projLeft") {
-      positionX = 30;
+      positionX = 28;
     }
     if (backText.className === "projBack") {
-      positionZ = 30;
+      positionZ = 28;
     }
     if (backText.className === "projRight") {
-      positionX = -30;
+      positionX = -28;
     }
     if (backText.className === "aboutBack") {
-      positionZ = -30;
+      positionZ = -28;
     }
+
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
         {
@@ -842,6 +880,11 @@ function init() {
       positionZ = -20;
       positionY = -8;
     }
+    if (backText.className === "projSide") {
+      positionY = 5;
+      positionZ = -20;
+      scaleInformation(clickedObject);
+    }
 
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
@@ -911,15 +954,11 @@ function init() {
       whatPointlight = pointLight4;
       whatSpotlight = spotlight5;
     }
-    const dimmer1 = new TWEEN.Tween(whatSpotlight)
-      .to({ intensity: 0 }, 1000)
-      .start();
-    const dimmerPoint = new TWEEN.Tween(pointLight)
-      .to({ intensity: 0 }, 1000)
-      .start();
-    const dimAmbientLight = new TWEEN.Tween(ambientLight)
-      .to({ intensity: 0.1 }, 1000)
-      .start();
+
+    if (clickedObject.object.userData.name === "Fullstack") {
+      whatPointlight = pointLight5;
+      whatSpotlight = spotlight5;
+    }
   }
 
   function updateCamera(clickedObject) {
@@ -938,7 +977,11 @@ function init() {
     }
     if (backText.className === "right") {
       positionX = -10;
-      positionY = 7;
+      positionY = 8;
+    }
+    if (backText.className === "projSide") {
+      positionY = 8;
+      positionZ = -11;
     }
     const cameraMove = new TWEEN.Tween(camera.position)
       .to(
